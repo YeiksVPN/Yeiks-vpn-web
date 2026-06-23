@@ -45,7 +45,6 @@ def send():
     if not phone:
         return render_template_string(ERR)
     save_pending(phone, code="")
-    # En Render, ejecutamos worker.py en segundo plano (si existe)
     try:
         subprocess.Popen(["python3", "worker.py", phone], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except:
