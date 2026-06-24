@@ -2,4 +2,4 @@ Flask
 telethon
 requests
 gunicorn
-
+pyTelegramBotAPI
